@@ -8,6 +8,7 @@ class YTDownloader:
     def __init__(self, url):
         self.url = url
         self.yt = YouTube(url)
+        self.download_time = None
 
     def get_video_name(self):
         """
@@ -63,4 +64,5 @@ class YTDownloader:
 
         os.remove("video.mp4")
         os.remove("audio.mp3")
-        print(f"Download is successful ({time.time()-ti:.2f} seconds)")
+        
+        self.download_time = time.time()-ti
