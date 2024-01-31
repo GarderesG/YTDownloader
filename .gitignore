@@ -1,0 +1,5 @@
+.venv/
+Documentaries/
+.git/
+.vscode/
+__pycache__/
