@@ -9,23 +9,37 @@ app = Dash(__name__,
 
 app.layout = dbc.Container(
     html.Div([
-        html.H1("YTDownloader"),
-        html.Div(children='Download videos from You Tube at best resolution!'),
-        dcc.Input(id="input-link", type="text", size="60"),
+        html.H1("YTDownloader", className="display-3"),
+        html.P('Download videos from You Tube at best resolution.', className="lead"),
+        html.Hr(className="my-2"),
+        html.P("Enter the link of the YouTube video to download."),
+        dbc.Input(id="input-link", type="text", placeholder="Enter link..."),
         dcc.Store(id="stored-yt-object"), 
         
         # activate when link is provided, with loading and info about the video
         dcc.Loading(
             id="loading-info",
             type="default",
-            children = html.Div(children=[
-                            html.H4(id="video-desc"),
+            children = dbc.Collapse(children=[
+                            dbc.CardGroup([
+                                dbc.CardImg(src ="assets/YT.png", top=True, style={"height": "5vh", "width": "5vh"}),
+                                dbc.Card(
+                                    [
+                                    html.H5(id="video-desc", className="card-title"),
+                                    html.P(id="res", className = "card-text pl-15")
+                                    ],
+                                    className="d-flex justify-content-center",
+                                    style={"padding-left": "10px"},
+                                    color="dark"
+                                ),
+                            ], className="card border-light mb-3", style={"margin-top": "20px"})
                             ],
                             id="hidden-info-video",
+                            is_open=True,
                             style= {'display': 'none'}
                             )
         ),
-        html.Button("Download", id="btn-download", style= {'display': 'none'}, n_clicks=0),
+        dbc.Button("Download", id="btn-download", style= {'display': 'none'}, n_clicks=0, color="primary"),
     ])
 )
 
@@ -61,13 +75,14 @@ def is_link_empty(text: str):
 @app.callback(
     Output("btn-download", "style", allow_duplicate=True),
     Input("hidden-info-video", "style"),
+    State("video-desc", "children"),
     prevent_initial_call=True
     )
-def button_download_visible_from_desc(style_desc):
+def button_download_visible_from_desc(style_desc, video_desc: str):
     """
     Callback to make the Download button visible once the Div with the video name is visible.
     """
-    if style_desc != dict(display="none"):
+    if style_desc != dict(display="none") and video_desc != "Youtube link is incorrect":
         # If video information is visible and button was not clicked, show Download button
         return dict(display="block")
     else:
